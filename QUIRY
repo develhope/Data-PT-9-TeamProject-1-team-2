@@ -1,36 +1,20 @@
-SECONDA QUITY
+-- Selezione dati demografici dei giocatori
 WITH Demographics AS (
 SELECT PlayerID, Age, Gender, Location
-FROM game 
-),
-Behavoir AS (SELECT PlayerID, PlayTimeHours, AvgSessionDurationMinutes, SessionsPerWeek
 FROM game),
+--Selezione informazioni comportamentali
+Behavior AS (SELECT PlayerID, PlayTimeHours, AvgSessionDurationMinutes, SessionsPerWeek
+FROM game),
+-- Selezione statistiche di gioco
 Stats  AS (SELECT PlayerID, PlayerLevel, AchievementsUnlocked
 FROM game),
+-- Selezione dati relativi al tasso di partecipazione e acquisti in game
 Rate AS (SELECT PlayerID, InGamePurchases, EngagementLevel, GameGenre, GameDifficulty 
 FROM game)
+--Confronto tra i dati indicati per evidenziare la correlazione tra gli acquisti, la durata media di gioco, l'età e gli achievement sbloccati
 SELECT b.PlayerID, s.AchievementsUnlocked , b.AvgSessionDurationMinutes, d.Age, r.IngamePurchases
-FROM Behavoir b 
+FROM Behavior b 
 JOIN Stats s on b.PlayerID = s.PlayerID
 JOIN Demographics d on b.PlayerID = d.PlayerID
 JOIN Rate r on b.PlayerID = r.PlayerID
-GROUP BY r.InGamePurchases , d.Age
-ORDER BY s.AchievementsUnlocked DESC, b.AvgSessionDurationMinutes DESC
-
-PRIMA QUIRY
-WITH Demographics AS (
-SELECT PlayerID, Age, Gender, Location
-FROM game 
-),
-Behavoir AS (SELECT PlayerID, PlayTimeHours, AvgSessionDurationMinutes, SessionsPerWeek
-FROM game),
-Stats  AS (SELECT PlayerID, PlayerLevel, AchievementsUnlocked
-FROM game),
-Rate AS (SELECT PlayerID, InGamePurchases, EngagementLevel, GameGenre, GameDifficulty 
-FROM game)
-SELECT b.PlayerID, s.AchievementsUnlocked , s.PlayerLevel, b.AvgSessionDurationMinutes, b.SessionsPerWeek
-FROM Behavoir b
-Join Stats s on b.PlayerID = s.PlayerID
-GROUP BY b.AvgSessionDurationMinutes 
-ORDER BY s.AchievementsUnlocked DESC
-FUNZIONANTE
+ORDER BY s.AchievementsUnlocked DESC, r.InGamePurchases DESC;
