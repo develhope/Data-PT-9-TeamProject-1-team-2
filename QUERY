@@ -1,16 +1,16 @@
 -- Selezione dati demografici dei giocatori
 WITH Demographics AS (
 SELECT PlayerID, Age, Gender, Location
-FROM game),
+FROM gaming_behavior),
 --Selezione informazioni comportamentali
 Behavior AS (SELECT PlayerID, PlayTimeHours, AvgSessionDurationMinutes, SessionsPerWeek
-FROM game),
+FROM gaming_behavior),
 -- Selezione statistiche di gioco
 Stats  AS (SELECT PlayerID, PlayerLevel, AchievementsUnlocked
-FROM game),
+FROM gaming_behavior),
 -- Selezione dati relativi al tasso di partecipazione e acquisti in game
 Rate AS (SELECT PlayerID, InGamePurchases, EngagementLevel, GameGenre, GameDifficulty 
-FROM game)
+FROM gaming_behavior)
 --Confronto tra i dati indicati per evidenziare la correlazione tra gli acquisti, la durata media di gioco, l'età e gli achievement sbloccati
 SELECT b.PlayerID, s.AchievementsUnlocked , b.AvgSessionDurationMinutes, d.Age, r.IngamePurchases
 FROM Behavior b 
@@ -22,11 +22,11 @@ ORDER BY s.AchievementsUnlocked DESC, r.InGamePurchases DESC;
 
 
 SELECT
-  gb.Gender,
-  gb.GameGenre,
+  Gender,
+  GameGenre,
   COUNT(*) AS num_players,
- gb.EngagementLevel AS avg_engagement,
- gb.GameDifficulty AS avg_difficulty
-FROM gaming_behavior gb
-GROUP BY gb.Gender, gb.GameGenre
-ORDER BY gb.Gender;
+ EngagementLevel AS avg_engagement,
+ GameDifficulty AS avg_difficulty
+FROM gaming_behavior 
+GROUP BY Gender, GameGenre
+ORDER BY Gender;
