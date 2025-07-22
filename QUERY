@@ -18,3 +18,15 @@ JOIN Stats s on b.PlayerID = s.PlayerID
 JOIN Demographics d on b.PlayerID = d.PlayerID
 JOIN Rate r on b.PlayerID = r.PlayerID
 ORDER BY s.AchievementsUnlocked DESC, r.InGamePurchases DESC;
+
+
+
+SELECT
+  gb.Gender,
+  gb.GameGenre,
+  COUNT(*) AS num_players,
+ gb.EngagementLevel AS avg_engagement,
+ gb.GameDifficulty AS avg_difficulty
+FROM gaming_behavior gb
+GROUP BY gb.Gender, gb.GameGenre
+ORDER BY gb.Gender;
