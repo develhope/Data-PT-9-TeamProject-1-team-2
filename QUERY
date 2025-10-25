@@ -1,0 +1,60 @@
+-- Selezione dati demografici dei giocatori
+WITH Demographics AS (
+SELECT PlayerID, Age, Gender, Location
+FROM gaming_behavior),
+--Selezione informazioni comportamentali
+Behavior AS (SELECT PlayerID, PlayTimeHours, AvgSessionDurationMinutes, SessionsPerWeek
+FROM gaming_behavior),
+-- Selezione statistiche di gioco
+Stats  AS (SELECT PlayerID, PlayerLevel, AchievementsUnlocked
+FROM gaming_behavior),
+-- Selezione dati relativi al tasso di partecipazione e acquisti in game
+Rate AS (SELECT PlayerID, InGamePurchases, EngagementLevel, GameGenre, GameDifficulty 
+FROM gaming_behavior)
+--Confronto tra i dati indicati per evidenziare la correlazione tra gli acquisti, la durata media di gioco, l'età e gli achievement sbloccati
+SELECT b.PlayerID, s.AchievementsUnlocked , b.AvgSessionDurationMinutes, d.Age, r.IngamePurchases
+FROM Behavior b 
+JOIN Stats s on b.PlayerID = s.PlayerID
+JOIN Demographics d on b.PlayerID = d.PlayerID
+JOIN Rate r on b.PlayerID = r.PlayerID
+ORDER BY s.AchievementsUnlocked DESC, r.InGamePurchases DESC;
+
+
+
+SELECT GameGenre, Gender,        
+AVG(CASE WHEN GameDifficulty = 'Easy' THEN 1
+WHEN GameDifficulty = 'Medium' THEN 2
+WHEN GameDifficulty = 'Hard' THEN 3 END) AS Average_Difficulty,  
+-- Calcolo la difficoltà media, trasformando le etichette testuali in valori numerici
+--Ottengo così la difficoltà media per ciascun gruppo
+AVG(CASE WHEN EngagementLevel = 'Low' THEN 1
+WHEN EngagementLevel = 'Medium' THEN 2
+WHEN EngagementLevel = 'High' THEN 3 END) AS Average_Engagement,  
+-- Ottengo il coinvolgimento medio per genere e tipo di gioco
+-- Calcolo anche il coinvolgimento medio, trasformando i livelli in numeri
+-- In base alla media di engagement, assegno un'etichetta descrittiva
+CASE WHEN AVG(CASE WHEN EngagementLevel = 'Low' THEN 1
+WHEN EngagementLevel = 'Medium' THEN 2
+WHEN EngagementLevel = 'High' THEN 3 END) < 2 THEN 'Low'
+WHEN AVG(CASE WHEN EngagementLevel = 'Low' THEN 1
+WHEN EngagementLevel = 'Medium' THEN 2
+WHEN EngagementLevel = 'High' THEN 3 END) >= 2 AND AVG(
+CASE WHEN EngagementLevel = 'Low' THEN 1
+WHEN EngagementLevel = 'Medium' THEN 2
+WHEN EngagementLevel = 'High' THEN 3 END) < 3 THEN 'Medium'
+ELSE 'High'END AS Corresponding_engagement,  
+-- Mostro l’engagement medio in forma testuale
+-- Faccio lo stesso con la difficoltà: traduco il valore medio in un’etichetta
+CASE WHEN AVG(CASE WHEN GameDifficulty = 'Easy' THEN 1
+WHEN GameDifficulty = 'Medium' THEN 2
+WHEN GameDifficulty = 'Hard' THEN 3 END) < 2 THEN 'Easy'
+WHEN AVG(CASE WHEN GameDifficulty = 'Easy' THEN 1
+WHEN GameDifficulty = 'Medium' THEN 2
+WHEN GameDifficulty = 'Hard' THEN 3 END) >= 2 AND AVG(
+CASE WHEN GameDifficulty = 'Easy' THEN 1
+WHEN GameDifficulty = 'Medium' THEN 2
+WHEN GameDifficulty = 'Hard' THEN 3 END) < 3 THEN 'Medium'
+ELSE 'Hard'END AS Corresponding_difficulty  -- Mostro la difficoltà media in forma testuale
+FROM gaming_behavior -- Utilizzo il dataset principale sul comportamento nel gaming online
+GROUP BY GameGenre, Gender -- Raggruppo i dati per genere di gioco e genere del giocatore
+ORDER BY GameGenre, Gender;-- Ordino i risultati in modo leggibile, prima per genere di gioco poi per genere
